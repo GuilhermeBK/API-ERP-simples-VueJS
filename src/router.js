@@ -1,18 +1,19 @@
-import Home from '@/views/Home.vue'
-import Login from '@/views/Login.vue'
-import PaginaNaoEncontrada from '@/views/PaginaNaoEncontrada.vue'
-import Site from '@/views/Site.vue'
-import Vendas from '@/components/vendas/Vendas.vue'
-import Servicos from '@/components/servicos/Servicos.vue'
-import Servico from '@/components/servicos/Servico.vue'
-import Indicadores from '@/components/servicos/Indicadores.vue'
-import Opcoes from '@/components/servicos/Opcoes.vue'
-import Leads from '@/components/vendas/Leads.vue'
-import Contratos from '@/components/vendas/Contratos.vue'
-import Dashboard from '@/components/dashboard/Dashboard.vue'
-import DashboardRodape from '@/components/dashboard/DashboardRodape.vue'
-import Lead from '@/components/vendas/Lead.vue'
-import VendasPadrao from '@/components/vendas/VendasPadrao.vue'
+const Home = () => import( '@/views/Home.vue')
+const Login = () => import( '@/views/Login.vue')
+const PaginaNaoEncontrada = () => import( '@/views/PaginaNaoEncontrada.vue')
+const Site = () => import( '@/views/Site.vue')
+const Vendas = () => import( /* webPackChunkName: "vendas" */'@/components/vendas/Vendas.vue')
+const Servicos = () => import( /* webPackChunkName: "servicos" */'@/components/servicos/Servicos.vue')
+const Servico = () => import( /* webPackChunkName: "servicos" */ '@/components/servicos/Servico.vue')
+const Indicadores = () => import( /* webPackChunkName: "servicos" */ '@/components/servicos/Indicadores.vue')
+const Opcoes = () => import( /* webPackChunkName: "servicos" */ '@/components/servicos/Opcoes.vue')
+const Leads = () => import( /* webPackChunkName: "vendas" */'@/components/vendas/Leads.vue')
+const Contratos = () => import( /* webPackChunkName: "vendas" */'@/components/vendas/Contratos.vue')
+const Dashboard = () => import( /* webPackChunkName: "dashboard" */ '@/components/dashboard/Dashboard.vue')
+const DashboardRodape = () => import( /* webPackChunkName: "dashboard" */ '@/components/dashboard/DashboardRodape.vue')
+const Lead = () => import( /* webPackChunkName: "vendas" */ '@/components/vendas/Lead.vue')
+//lazy load
+const  VendasPadrao = () => import('@/components/vendas/VendasPadrao.vue')
 
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -21,6 +22,9 @@ const routes = [
     {
         path: '/home', //localhost:8080/home
         component: Home,
+        meta: {
+            requerAutorizacao: false
+        },
         children: [{
             path: 'vendas',
             component: Vendas,
@@ -36,7 +40,8 @@ const routes = [
             {
                 path: 'leads/:id',
                 component: Lead,
-                name: 'lead'
+                name: 'lead',
+                props: true
             },
             {
                 path: '',
@@ -50,6 +55,11 @@ const routes = [
             children: [
                 {
                     path: ':id',
+                    props: {
+                        default: true,
+                        indicadores: true,
+                        opcoes: true
+                    },
                     name: 'servico',
                     components: {
                         default: Servico,
@@ -74,7 +84,10 @@ const routes = [
     },
     {
         path: '/', //localhost:8080/site
-        component: Site
+        component: Site,
+        meta: {
+            requerAutorizacao: false
+        }
 
     },
     { path: '/:catchAll(.*)*', component: PaginaNaoEncontrada }
@@ -82,7 +95,29 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
+    scrollBehavior(to, from, savedPosition) {
+
+        if(savedPosition){
+            return savedPosition
+        }
+
+        if (to.hash) {
+            console.log(to.hash)
+            return {
+
+                el: to.hash
+            }
+        }
+        return {
+            left: 0,
+            top: 0
+        }
+    },
     routes
+})
+
+router.beforeEach((to, from) => {
+
 })
 
 export default router
