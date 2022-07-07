@@ -1,5 +1,7 @@
 # empresa360
 
+## Projeto usado para praticar Lazy load, web Pack Chunk Name, consumo de APIs, Mixins, router, requisições HTTP e controle de scroll
+
 ## Project setup
 ```
 npm install
